@@ -15,7 +15,7 @@ builder.Services.AddSwaggerDocumentation();
 builder.Services.AddDbContext<StoreContext>(x => 
     x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
-builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddCors(opt=>
 {
     opt.AddPolicy("CorsPolicy",policy=>
