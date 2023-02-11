@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Errors;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
 
@@ -21,6 +22,7 @@ namespace API.Extensions
             });
             services.AddScoped<IBasketRepository,BasketRepository>();
             services.AddScoped<IProductRepository,ProductRepository>();
+            services.AddScoped<ITokenService,TokenService>();
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
             services.Configure<ApiBehaviorOptions>(options=> {
                 options.InvalidModelStateResponseFactory= actionContext => 

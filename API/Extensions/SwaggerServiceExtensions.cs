@@ -18,7 +18,7 @@ namespace API.Extensions
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-
+            
             return app;
         }
     }

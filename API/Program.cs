@@ -1,7 +1,10 @@
 using API.Extensions;
 using API.Helpers;
 using API.Middleware;
+using Core.Entities.Identity;
 using Infrastructure.Data;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +18,10 @@ builder.Services.AddSwaggerDocumentation();
 builder.Services.AddDbContext<StoreContext>(x => 
     x.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
+
 builder.Services.AddCors(opt=>
 {
     opt.AddPolicy("CorsPolicy",policy=>
@@ -33,8 +39,12 @@ using (var scope=app.Services.CreateScope())
     try
     {
         var context= services.GetRequiredService<StoreContext>();
+        var identityContext= services.GetRequiredService<AppIdentityDbContext>();
+        var userManager= services.GetRequiredService<UserManager<AppUser>>();
         await context.Database.MigrateAsync();
+        await identityContext.Database.MigrateAsync();
         await StoreContextSeed.SeedAsync(context,loggerFactory);
+        await AppIdentityDbContextSeed.SeedUserAsync(userManager);
     }
     catch (System.Exception ex)
     {
@@ -59,6 +69,8 @@ app.UseRouting();
 app.UseStaticFiles();
 
 app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
